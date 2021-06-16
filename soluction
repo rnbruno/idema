@@ -1,0 +1,18 @@
+
+//quantidade de processo por cliente
+$sql_quant_processo = "select count (processo_id_int) as quant_processo from processo_cliente where cliente_id_int =".$cliente_id."";
+$res_quant_processo = $pdo->query($sql_quant_processo)->fetchAll()[0];
+$quant_processo = $res_quant_processo["quant_processo"];
+
+//delimitando tamanho do subconjunto (uniao dos processos num var) com os processos com int de controle
+$quant_processo_aux =intval($quant_processo)*11;
+
+// echo $setar_registro; // debug
+
+//unindo os processos
+$sql_unir_processos= "select distinct substring((select ',' + pc.processo_id as [text()]
+								from processo_cliente pc where cliente_id_int =".$cliente_id." for XML path
+								 ('')),2,".$quant_processo_aux.")as processos
+	from processo_cliente pc2";
+$res_unir_processos= $pdo->query($sql_unir_processos)->fetchAll()[0];
+$unir_processos= $res_unir_processos["processos"];
